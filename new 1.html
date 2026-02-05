@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Valentine</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fecfef, #ffecd2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 60px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+        }
+        h1 {
+            color: #e91e63;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        #yes {
+            background-color: #4caf50;
+            color: white;
+            transform: scale(1);
+        }
+        #no {
+            background-color: #f44336;
+            color: white;
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
+        .cat-meme {
+            display: none;
+            margin-top: 20px;
+            position: relative;
+            z-index: 20;
+        }
+        .cat-meme img {
+            width: 200px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .balloon {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            animation: float 3s ease-in-out forwards;
+            z-index: 5;
+        }
+        .balloon svg {
+            width: 100%;
+            height: 100%;
+        }
+        @keyframes float {
+            0% { bottom: -50px; opacity: 1; }
+            100% { bottom: 100vh; opacity: 0; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <!-- Musique de fond : chargée depuis le dossier local "music" -->
+    <audio id="background-music" loop>
+        <source src="music/musique.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <h1>Veux-tu être ma Valentine ?</h1>
+        <div class="buttons">
+            <button id="yes">Oui</button>
+            <button id="no">Non</button>
+        </div>
+        <div class="cat-meme">
+            <!-- GIF chargé depuis le dossier local "gif" -->
+            <img src="gif/coeurs.gif" alt="Cœurs qui flottent">
+        </div>
+    </div>
+
+    <script>
+        const backgroundMusic = document.getElementById('background-music');
+        backgroundMusic.volume = 0.3; // Volume réduit
+
+        // Lancer la musique après un clic sur la page
+        document.addEventListener('click', () => {
+            backgroundMusic.play().catch(e => console.log("Erreur de lecture :", e));
+        }, { once: true }); // Le son se lance une seule fois après le premier clic
+
+        let yesScale = 1;
+        const yesButton = document.getElementById('yes');
+        const noButton = document.getElementById('no');
+        const catMeme = document.querySelector('.cat-meme');
+        let balloonsActive = false;
+
+        noButton.addEventListener('click', () => {
+            yesScale += 0.2;
+            yesButton.style.transform = `scale(${yesScale})`;
+        });
+
+        yesButton.addEventListener('click', () => {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            catMeme.style.display = 'block';
+            if (!balloonsActive) {
+                balloonsActive = true;
+                launchBalloons();
+            }
+        });
+
+        // Lancer des ballons en continu
+        function launchBalloons() {
+            setInterval(() => {
+                for (let i = 0; i < 3; i++) { // 3 ballons toutes les 300ms
+                    const balloon = document.createElement('div');
+                    balloon.className = 'balloon';
+                    balloon.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="red">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    `;
+                    balloon.style.left = (Math.random() * 80 + 10) + 'vw';
+                    balloon.style.animationDelay = Math.random() * 1 + 's';
+                    document.body.appendChild(balloon);
+                    setTimeout(() => {
+                        balloon.remove();
+                    }, 3000);
+                }
+            }, 300); // Toutes les 300ms
+        }
+    </script>
+</body>
+</html>
